@@ -22,18 +22,32 @@ const margin = { top: 80, right: 60, bottom: 60, left: 100 };
 const width = 800 - margin.left - margin.right;
 const height = 600 - margin.top - margin.bottom;
 
+let allData = [];
+
+// Initialize hourCounts to count crimes for each hour of the day (0-23)
+let hourCounts = Array.from({length: 24}, (_, i) => ({
+    hour: i,
+    count: 0
+}));
+
+const options = ['All Crime Types', 'Theft', 'Assault', 'Battery', 'Narcotics', 'Other Offenses']; // Example crime types
+
 // Fetch and parse the chicago_csv file
 function init(){
     d3.csv("data/chicago_crimes.csv", d => ({
         Date: d.Date,
+        // Extract hour from Date (assuming Date is in a format like "MM/DD/YYYY HH:MM:SS AM/PM")
+        Hour: +d.Date.split(' ')[1].split(':')[0] % 12 + (d.Date.includes('PM') ? 12 : 0),
         PrimaryType: d["Primary Type"],
         Year: +d.Year
     }))
     .then(data => {
             console.log(data)
             allData = data
+            //hourCounts[d.Hour].count += 1;
+            //print(hourCounts);
             setUpSelector()
-            // placeholder for building vis
+            updateVis()
             // placeholder for adding listerners
         })
     .catch(error => console.error('Error loading data:', error));
@@ -52,4 +66,23 @@ const svg = d3.select('#vis')
 function setUpSelector(){
     // Handles UI changes (sliders, dropdowns)
     // Anytime the user tweaks something, this function reacts.
+}
+
+// Function to get hourly counts of crimes for a given year and crime type
+// filteredData is the subset of allData based on the user's selections (year and crime type)
+function getHourlyCounts(filteredData) {
+
+    let counts = Array.from({length:24}, (_,i)=>({hour:i,count:0}));
+
+    filteredData.forEach(d=>{
+        counts[d.hour].count++;
+    });
+
+    return counts;
+}
+
+function updateVis(){
+    // Use D3 to update the visualization based on the current selections (year and crime type)
+    // This function will be called whenever the user changes a selection (e.g., from the dropdowns)
+    // It should filter allData based on the current selections, then call getHourlyCounts() to get the data needed for the visualization, and finally update the SVG elements accordingly. 
 }
