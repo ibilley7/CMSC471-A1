@@ -37,11 +37,19 @@ let xVar = 'Hour', yVar = 'count';
 
 let xScale, yScale, sizeScale;
 
-// Initialize hourCounts to count crimes for each hour of the day (0-23)
-let hourCounts = Array.from({length: 24}, (_, i) => ({
-    hour: i,
-    count: 0
-}));
+// Color scale for different crime types
+const colorScale = d3.scaleOrdinal() .range(d3.quantize(d3.interpolateRainbow, 33));
+
+// Tooltip group inside SVG
+const tooltipGroup = d3.select('#vis')
+    .append("div")
+    .style("position","absolute")
+    .style("background","white")
+    .style("border","1px solid #ccc")
+    .style("padding","6px")
+    .style("border-radius","4px")
+    .style("font-size","12px")
+    .style("opacity",0);
 
 
 // Fetch and parse the chicago_csv file
@@ -56,12 +64,12 @@ function init(){
     .then(data => {
             console.log(data)
             allData = data
-            //hourCounts[d.Hour].count += 1;
-            //print(hourCounts);
             dataCounts = getHourlyCounts(allData);
             console.log(dataCounts);
             updateAxes();
             setOptions();
+            colorScale.domain(typeOptions.slice(1));
+            createLegend();
             setUpSelector();
             updateVis();
             // placeholder for adding listeners
@@ -78,6 +86,12 @@ const svg = d3.select('#vis')
     .attr('height', height + margin.top + margin.bottom)
     .append('g')
     .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+// Line generator for smoother lines
+const lineGenerator = d3.line()
+    .x(d => xScale(d.hour))
+    .y(d => yScale(d.count))
+    .curve(d3.curveMonotoneX);
 
 function setUpSelector(){
     // Handles UI changes (sliders, dropdowns)
@@ -139,8 +153,9 @@ function updateAxes(){
     svg.selectAll('.labels').remove() // Clear old labels before drawing new ones
 
     xScale = d3.scaleLinear()
-        .domain([0, d3.max(allData, d => d[xVar])])
+        .domain([0, 23])
         .range([0, width]);
+
     const xAxis = d3.axisBottom(xScale)
         .ticks(24);
 
@@ -151,8 +166,11 @@ function updateAxes(){
 
     yScale = d3.scaleLinear()
         .domain([0, d3.max(dataCounts, d => d[yVar])])
+        .nice()
         .range([height, 0]);
+
     const yAxis = d3.axisLeft(yScale)
+        .ticks(12);
 
     svg.append("g")
         .attr("class", "axis")
@@ -165,7 +183,7 @@ function updateAxes(){
         .attr("x", width / 2)
         .attr("y", height + margin.bottom - 20)
         .attr("text-anchor", "middle")
-        .text(xVar) // Displays the current x-axis variable
+        .text("Hour of Day")
         .attr('class', 'labels')
 
     // Y-axis label (rotated)
@@ -174,9 +192,8 @@ function updateAxes(){
         .attr("x", -height / 2)
         .attr("y", -margin.left + 40)
         .attr("text-anchor", "middle")
-        .text(yVar) // Displays the current y-axis variable
+        .text("Number of Crimes")
         .attr('class', 'labels')
-    
 }
 
 function updateVis(){
@@ -184,6 +201,7 @@ function updateVis(){
     // This function will be called whenever the user changes a selection (e.g., from the dropdowns)
     // It should filter allData based on the current selections, then call getHourlyCounts() to get the data needed for the visualization, and finally update the SVG elements accordingly. 
     
+    const lineColor = dropType === "All Crime Types" ? "#4f46e5" : colorScale(dropType);
 
     svg.selectAll('.line')
     .data([dataCounts]) // We wrap dataCounts in an array because we want to create one line for the entire dataset
@@ -192,24 +210,62 @@ function updateVis(){
             return enter.append('path')
             .attr('class', 'line')
             .attr('fill', 'none')
-            .attr('stroke', 'steelblue')
-            .attr('stroke-width', 2)
-            .attr('d', d3.line()
-                .x(d => xScale(d.hour))
-                .y(d => yScale(d.count))
-            )
+            .attr('stroke', lineColor)
+            .attr('stroke-width', 3)
+            .attr('d', lineGenerator)
         },
         function(update){
             return update
-            .attr('d', d3.line()
-                .x(d => xScale(d.hour))
-                .y(d => yScale(d.count))
-            )
+            .transition()
+            .duration(800)
+            .attr('stroke', lineColor)
+            .attr('d', lineGenerator)
         },
         function(exit){
             return exit.remove();
         }
     )
+
+    // Add circles for hover tooltips
+    svg.selectAll(".dot")
+        .data(dataCounts)
+        .join(
+            enter => enter.append("circle")
+                .attr("class","dot")
+                .attr("cx",d=>xScale(d.hour))
+                .attr("cy",height)
+                .attr("r",4)
+                .attr("fill",lineColor)
+                .transition()
+                .duration(800)
+                .attr("cy",d=>yScale(d.count)),
+
+            update => update
+                .transition()
+                .duration(800)
+                .attr("cx",d=>xScale(d.hour))
+                .attr("cy",d=>yScale(d.count))
+                .attr("fill",lineColor),
+
+            exit => exit.remove()
+        )
+
+        .on("mouseover",function(event,d){
+            
+            d3.select(this).transition().attr("r",7);
+            tooltipGroup
+                .style("opacity",1)
+                .html("Hour: "+d.hour+"<br>Crimes: "+d.count)
+                .style("left",(event.pageX+10)+"px")
+                .style("top",(event.pageY-20)+"px")
+
+        })
+
+        .on("mouseout",function(){
+            d3.select(this).transition().attr("r",4);
+            tooltipGroup
+                .style("opacity",0)
+        })
 }
 
 function setOptions(){
@@ -241,4 +297,23 @@ function filterData(){
     dataCounts = getHourlyCounts(filteredData);
 }
 
+function createLegend(){
 
+    const legend = d3.select("#legend");
+
+    legend.selectAll("*").remove();
+
+    typeOptions.slice(1).forEach(type => {
+
+        const item = legend.append("div")
+            .attr("class","legend-item");
+
+        item.append("div")
+            .attr("class","legend-color")
+            .style("background", colorScale(type));
+
+        item.append("div")
+            .text(type);
+
+    });
+}

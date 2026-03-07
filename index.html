@@ -14,11 +14,17 @@
 
     <div class="container"> <!-- Centers content and sets max width -->
         <h1>Assignment 1: Interactive Visualization</h1>
+        <p id="description">
+            This visualization displays the crime patterns in Chicago by hour. You can filter by the crime scene type and year.
+            The line chart shows the crimes at each hour, where you can also hover over the points to see the exact crime count value.
+            The legend is below the graph, where each color represents the different crime type.
+        </p>
         <div id="controls">
             Crime Type: <select id="crimeType" class="variable">All Crime Types</select>
             Year: <select id="crimeYear" class="variable"></select>
         </div>
         <div id="vis"></div> <!--  Will hold our visualization (SVG) -->
+        <div id="legend"></div>
     </div>
 
 
