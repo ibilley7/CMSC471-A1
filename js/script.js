@@ -355,6 +355,82 @@ function updateVis(){
         })
 }
 
+function drawPreviewLine(hoveredType) {
+    // Don't draw a preview if the hovered type is already the selected one
+    if (hoveredType === dropType) return;
+
+    // Filter allData for the hovered type (and current year selection)
+    let previewData = allData.filter(d => d.PrimaryType === hoveredType);
+    if (dropYear !== 'All Years') {
+        previewData = previewData.filter(d => d.Year === +dropYear);
+    }
+
+    const previewCounts = getHourlyCounts(previewData);
+    const previewColor = colorScale(hoveredType);
+
+    // Draw the preview line
+    svg.selectAll('.preview-line')
+        .data([previewCounts])
+        .join(
+            enter => enter.append('path')
+                .attr('class', 'preview-line')
+                .attr('fill', 'none')
+                .attr('stroke', previewColor)
+                .attr('stroke-width', 2)
+                .attr('stroke-dasharray', '6 4')   // dashed so it's visually distinct
+                .attr('opacity', 0.35)
+                .attr('d', lineGenerator),
+
+            update => update
+                .attr('stroke', previewColor)
+                .attr('d', lineGenerator)
+                .attr('opacity', 0.35),
+
+            exit => exit.remove()
+        );
+
+    // Draw small faint dots along the preview line
+    svg.selectAll('.preview-dot')
+        .data(previewCounts)
+        .join(
+            enter => enter.append('circle')
+                .attr('class', 'preview-dot')
+                .attr('cx', d => xScale(d.hour))
+                .attr('cy', d => yScale(d.count))
+                .attr('r', 3)
+                .attr('fill', previewColor)
+                .attr('opacity', 0.35),
+
+            update => update
+                .attr('cx', d => xScale(d.hour))
+                .attr('cy', d => yScale(d.count))
+                .attr('fill', previewColor),
+
+            exit => exit.remove()
+        );
+
+    // Show a small label near the peak of the preview line so users know which type it is
+    const maxPreview = d3.max(previewCounts, d => d.count);
+    const peakPreview = previewCounts.find(d => d.count === maxPreview);
+
+    svg.selectAll('.preview-label').remove();
+    svg.append('text')
+        .attr('class', 'preview-label')
+        .attr('x', xScale(peakPreview.hour))
+        .attr('y', yScale(peakPreview.count) - 10)
+        .attr('text-anchor', 'middle')
+        .style('font-size', '11px')
+        .style('fill', previewColor)
+        .style('opacity', 0.75)
+        .text(hoveredType);
+}
+
+function removePreviewLine() {
+    svg.selectAll('.preview-line').remove();
+    svg.selectAll('.preview-dot').remove();
+    svg.selectAll('.preview-label').remove();
+}
+
 function setOptions(){
     // Helper function to set dropdown options based on the data
     allData.forEach(d => {
@@ -402,5 +478,39 @@ function createLegend(){
         item.append("div")
             .text(type);
 
+    });
+}
+
+function createLegend(){
+    const legend = d3.select("#legend");
+    legend.selectAll("*").remove();
+
+    typeOptions.slice(1).forEach(type => {
+        const item = legend.append("div")
+            .attr("class", "legend-item")
+            .style("display", "inline-flex")
+            .style("align-items", "center")
+            .style("margin", "4px 8px")
+            .style("cursor", "pointer")   // ← pointer so users know it's hoverable
+            // ── NEW: legend hover handlers ──
+            .on("mouseover", function() {
+                d3.select(this).style("opacity", 0.7);
+                drawPreviewLine(type);
+            })
+            .on("mouseout", function() {
+                d3.select(this).style("opacity", 1);
+                removePreviewLine();
+            });
+
+        item.append("div")
+            .style("width", "12px")
+            .style("height", "12px")
+            .style("background-color", colorScale(type))
+            .style("margin-right", "5px")
+            .style("border-radius", "2px");
+
+        item.append("span")
+            .style("font-size", "12px")
+            .text(type);
     });
 }
