@@ -256,20 +256,22 @@ function updateVis(){
             .attr("stroke-dashoffset", 0);
         },
         function(update){
-            return update
+        return update
             .transition()
             .duration(800)
             .attr('stroke', lineColor)
-                        .attr("d", lineGenerator)
-            .attr("stroke-dasharray", function() {
-                return this.getTotalLength();
-            })
-            .attr("stroke-dashoffset", function() {
-                return this.getTotalLength();
-            })
-            .transition()
-            .duration(1200)
-            .attr("stroke-dashoffset", 0);
+            .attr("d", lineGenerator)
+            .on("end", function() {
+
+                const length = this.getTotalLength();
+
+                d3.select(this)
+                    .attr("stroke-dasharray", length)
+                    .attr("stroke-dashoffset", length)
+                    .transition()
+                    .duration(1200)
+                    .attr("stroke-dashoffset", 0);
+            });
         },
         function(exit){
             return exit.remove();
