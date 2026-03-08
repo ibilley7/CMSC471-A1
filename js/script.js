@@ -115,14 +115,23 @@ function zoomed(event){
 d3.select("#vis svg").call(zoom);
     
 function brushed(event){
-    if(!event.selection) return;
+
+    if(!event.selection){
+        // Reset all dots if brush is cleared
+        svg.selectAll(".dot")
+            .attr("opacity",1);
+        return;
+    }
+
     const [x0,x1] = event.selection;
+
     const startHour = Math.ceil(xScale.invert(x0));
     const endHour = Math.floor(xScale.invert(x1));
-    
+
     svg.selectAll(".dot")
-    .attr("opacity", d => d.hour >= startHour && d.hour <= endHour ? 1 : 0.2       
-    );
+        .attr("opacity", d =>
+            d.hour >= startHour && d.hour <= endHour ? 1 : 0.2
+        );
 }
 
 function setUpSelector(){
