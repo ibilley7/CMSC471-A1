@@ -93,6 +93,38 @@ const lineGenerator = d3.line()
     .y(d => yScale(d.count))
     .curve(d3.curveMonotoneX);
 
+const brush = d3.brushX()
+    .extent([[0,0],[width,height]])
+    .on("end", brushed);
+
+svg.append("g")
+    .attr("class","brush")
+    .call(brush);
+
+// Create zoom behavior
+const zoom = d3.zoom()
+    .scaleExtent([1,5])
+    .translateExtent([[0,0],[width,height]])
+    .on("zoom", zoomed);
+
+function zoomed(event){
+    svg.attr("transform", event.transform);
+}
+
+// Apply zoom to the svg
+d3.select("#vis svg").call(zoom);
+    
+function brushed(event){
+    if(!event.selection) return;
+    const [x0,x1] = event.selection;
+    const startHour = Math.ceil(xScale.invert(x0));
+    const endHour = Math.floor(xScale.invert(x1));
+    
+    svg.selectAll(".dot")
+    .attr("opacity", d => d.hour >= startHour && d.hour <= endHour ? 1 : 0.2       
+    );
+}
+
 function setUpSelector(){
     // Handles UI changes (sliders, dropdowns)
     // Anytime the user tweaks something, this function reacts.
@@ -201,7 +233,7 @@ function updateVis(){
     // This function will be called whenever the user changes a selection (e.g., from the dropdowns)
     // It should filter allData based on the current selections, then call getHourlyCounts() to get the data needed for the visualization, and finally update the SVG elements accordingly. 
     
-    const lineColor = dropType === "All Crime Types" ? "#4f46e5" : colorScale(dropType);
+    const lineColor = dropType === "All Crime Types" ? "black" : colorScale(dropType);
 
     svg.selectAll('.line')
     .data([dataCounts]) // We wrap dataCounts in an array because we want to create one line for the entire dataset
@@ -212,19 +244,51 @@ function updateVis(){
             .attr('fill', 'none')
             .attr('stroke', lineColor)
             .attr('stroke-width', 3)
-            .attr('d', lineGenerator)
+            .attr("d", lineGenerator)
+            .attr("stroke-dasharray", function() {
+                return this.getTotalLength();
+            })
+            .attr("stroke-dashoffset", function() {
+                return this.getTotalLength();
+            })
+            .transition()
+            .duration(1200)
+            .attr("stroke-dashoffset", 0);
         },
         function(update){
             return update
             .transition()
             .duration(800)
             .attr('stroke', lineColor)
-            .attr('d', lineGenerator)
+                        .attr("d", lineGenerator)
+            .attr("stroke-dasharray", function() {
+                return this.getTotalLength();
+            })
+            .attr("stroke-dashoffset", function() {
+                return this.getTotalLength();
+            })
+            .transition()
+            .duration(1200)
+            .attr("stroke-dashoffset", 0);
         },
         function(exit){
             return exit.remove();
         }
     )
+
+    const maxCrime = d3.max(dataCounts, d => d.count);
+    const peak = dataCounts.find(d => d.count === maxCrime);
+
+    svg.selectAll(".annotation").remove();
+
+    svg.append("text")
+        .attr("class","annotation")
+        .attr("x", xScale(peak.hour))
+        .attr("y", yScale(peak.count) - 15)
+        .attr("text-anchor","middle")
+        .style("font-size","18px")
+        .style("fill","red")
+        .text("Peak");
 
     // Add circles for hover tooltips
     svg.selectAll(".dot")
@@ -252,17 +316,29 @@ function updateVis(){
 
         .on("mouseover",function(event,d){
             
-            d3.select(this).transition().attr("r",7);
+            d3.select(this)
+                .transition()
+                .attr("r",7);
+            
+            svg.selectAll(".line")
+                .transition()
+                .attr("stroke-width",5);
             tooltipGroup
                 .style("opacity",1)
-                .html("Hour: "+d.hour+"<br>Crimes: "+d.count)
+                .html( "Hour: "+d.hour+":00"+ "<br>Crimes: "+d.count+ "<br>Type: "+dropType+ "<br>Year: "+dropYear )
                 .style("left",(event.pageX+10)+"px")
                 .style("top",(event.pageY-20)+"px")
 
         })
 
         .on("mouseout",function(){
-            d3.select(this).transition().attr("r",4);
+            d3.select(this)
+                .transition()
+                .attr("r",4);
+
+            svg.selectAll(".line")
+                .transition()
+                .attr("stroke-width",2);
             tooltipGroup
                 .style("opacity",0)
         })
