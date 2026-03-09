@@ -41,7 +41,7 @@ let xScale, yScale, sizeScale;
 const colorScale = d3.scaleOrdinal() .range(d3.quantize(d3.interpolateRainbow, 33));
 
 // Tooltip group inside SVG
-const tooltipGroup = d3.select('#vis')
+const tooltipGroup = d3.select('body')
     .append("div")
     .style("position","absolute")
     .style("background","white")
@@ -337,8 +337,8 @@ function updateVis(){
             tooltipGroup
                 .style("opacity",1)
                 .html( "Hour: "+d.hour+":00"+ "<br>Crimes: "+d.count+ "<br>Type: "+dropType+ "<br>Year: "+dropYear )
-                .style("left",(event.pageX+10)+"px")
-                .style("top",(event.pageY-20)+"px")
+                .style("left",(event.clientX+10)+"px")
+                .style("top",(event.clientY-20)+"px")
 
         })
 

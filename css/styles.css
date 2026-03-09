@@ -1,43 +1,173 @@
-/* Reset default styles */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+    --bg: #f7f6f3;
+    --surface: #ffffff;
+    --border: #e2e0da;
+    --text-primary: #1a1917;
+    --text-secondary: #6b6860;
+    --accent: #c0392b;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
 * {
-    font-family: "Inter", sans-serif;
-    max-width: 800px;
-    margin: 0px auto;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
     line-height: 1.8;
 }
 
-/* Container styling for layout */
+body {
+    background-color: var(--bg);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 2.5rem 1rem;
+}
+
 .container {
-    max-width: 800px;
-    margin: 2rem auto;
-    font-family: "Inter", sans-serif;
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+/* Header */
+h1 {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: bold;
+    font-weight: 500;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+#description {
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin: 0.85rem 0 1.5rem;
+    max-width: 600px;
+}
+
+/* Controls */
+#controls {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.02em;
+}
+
+#controls select {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.35rem 0.65rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b6860'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+    padding-right: 1.8rem;
+}
+
+#controls select:focus {
+    border-color: #aaa;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+/* Visualization wrapper */
+.vis-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+#vis {
+    position: relative;
 }
 
 #vis svg {
-    margin: 2rem 0;
-    border: 1px solid #ccc;
+    display: block;
+    margin: 0 auto;
 }
 
-#legend {
-    margin-top: 15px;
-    display: grid;
-    grid-template-columns: repeat(3, auto);
-    gap: 8px 20px;
+/* Axis & chart text */
+.axis text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    fill: var(--text-secondary);
+}
+
+.axis path,
+.axis line {
+    stroke: var(--border);
+}
+
+.labels {
+    font-family: 'DM Sans', sans-serif;
     font-size: 12px;
+    fill: var(--text-secondary);
+    letter-spacing: 0.03em;
+}
+
+/* Legend */
+#legend {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 6px 12px;
 }
 
 .legend-item {
     display: flex;
     align-items: center;
+    gap: 7px;
+    padding: 4px 7px;
+    border-radius: 5px;
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
 }
+
+.legend-item:hover {
+    background: var(--bg);
+    color: var(--text-primary);
+}
+
 .legend-color {
-    width: 12px;
-    height: 12px;
-    margin-right: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
 }
-#description {
-    font-size: 14px;
-    margin-bottom: 20px;
-    line-height: 1.5;
-    color: black;
+
+/* Tooltip */
+#vis>div {
+    font-family: 'DM Mono', monospace !important;
+    font-size: 11px !important;
+    background: var(--text-primary) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 8px 10px !important;
+    line-height: 1.7 !important;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
