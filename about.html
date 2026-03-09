@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — Chicago Crime Visualization</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <div class="container"> 
+        <h1 style="margin-top: 1rem;">About this Project</h1>
+        
+        <div class="about-content">
+
+            <a href="index.html" class="back-link">← Back to visualization</a>
+        
+            <h2>The Dataset</h2>
+            <div class="meta-row">
+                <div class="meta-item">
+                    <span class="meta-label">Source</span>
+                    <span class="meta-value">City of Chicago Data Portal</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Coverage</span>
+                    <span class="meta-value">2018 – Present</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Unit of Analysis</span>
+                    <span class="meta-value">Individual crime incidents</span>
+                </div>
+            </div>
+
+
+            <h2>Dataset</h2>
+            <p>
+                This visualization uses the chicago_crimes.csv dataset, which contains the columns: Date, Primary Type, and Year. The
+                dataset provides detailed records of crimes in Chicago, allowing exploration of hourly crime patterns by type and year.
+            </p>
+
+            <h2>Rationale for our design decisions</h2>
+            <p>
+                We believe that all of these interactive features help to aid the user in their understanding of the data. The zooming
+                and brushing could allow the user to focus on a smaller portion of the data rather than the large overall picture. The
+                legend hover preview allows the user to compare different crimes side-by-side to better understand certain trends and
+                differences in the data. The filtering allows users to observe the data by time or by focusing on specific crime areas.
+                One design feature that we considered, but ultimately cut out, was having the y-axis of the graph be set to the total
+                crime count of all of the data. The intention of this was to be able to see a side-by-side scaled comparison of the
+                crime occurrences. We chose to leave this out in favor of the dynamic y-axis (that is scaled by the count of the
+                currently selected crime). We did this because with the maximum height being set so high, it was difficult to compare
+                crimes that had very low occurrences because they were very low and flat. Dynamically assigning the scale of the y-axis
+                allows us to see the key differences in the crime occurrences per hour like we intended.
+            </p>
+
+            <h2>References</h2>
+            <p>
+                The main dataset used was the Chicago Crimes dataset that was provided by the City of Chicago’s data portal. Their
+                dataset on the website included the date, primary type, arrest, district, and the community area fields. For this
+                visualization, we decided to focus on aggregating the crime counts by hour to find temporal patterns in the different
+                crime types.
+                Some of the interaction patterns and D3 techniques were based on what we learned in the labs and some online D3
+                tutorials. ChatGPT was used to brainstorm some ideas on the interactions, but all the code was created manually and
+                tested by ourselves.
+                
+                This was the overall page that we used to look at different D3 elements. https://d3js.org/getting-started
+            </p>
+
+            <h2>Interactions</h2>
+            <p>
+                The visualization includes several interactive features which allow users to explore relationships between crime type,
+                year, and hourly crime counts. Each interaction is designed to make the data smooth and responsive, allowing easy
+                comparisons for the data.
+            </p>
+            <h3>Crime Type & Filters</h3>
+            <p>
+                The dropdown menus allow users to pick a specific crime type or year and update the line chart to show the filtered
+                data. The dropdowns make sure users can see specific crime types or years clearly and compare and contrast the different
+                years.
+            </p>
+            <h3>Line Chart Hover Tooltips</h3>
+            <p>
+                Hovering over points on the line chart displays a tooltip showing detailed information including the hour, number of
+                crimes, crime type, and the year. This allows precise data inspection without cluttering the chart with labels or text,
+                but also providing important information. When hovering over a point, it enlarges the point and the whole line, making
+                it easier to notice which point the cursor is addressing.
+            </p>
+            <h3>Legend Hover Preview</h3>
+            <p>
+                Hovering over an item in the legend temporarily displays a preview line for that crime type across the hours. This
+                allows users to compare different crime types without changing the main selection via the dropdown. Also, it is nice
+                seeing the two different lines on the graph to see how much greater or smaller the crime types are.
+            </p>
+            <h3>Brushing</h3>
+            <p>
+                Users can brush over the chart to highlight a range of hours, which dims points outside the selection. This helps focus
+                on specific time ranges to identify patterns or peak crime hours more clearly.
+            </p>
+            <h3>Zooming</h3>
+            <p>
+                Zooming enables users to magnify the sections of the chart for detailed examination of hourly trends. Combined with
+                brushing, zooming allows flexible navigation from overview to detailed views of the data. The user can zoom both in and
+                out, making it easier to view the data.
+            </p>
+            <h2>Development Process</h2>
+            <p>
+                Our team collaborated to research datasets, select the Chicago crime dataset, and plan the visualizations. After
+                outlining the design, the code was implemented evenly. Imirie mainly focused on parsing and filtering the data,
+                implementing dropdown interactions, and the legend previews. Shayan worked on the tooltips, hovering over the graph,
+                brushing, zooming, and updating the visualization with transitions. We both worked on editing the webpage and helped
+                with the written part. The most time-consuming part was refining interactions and ensuring smooth updates while fixing
+                some bug issues.
+            </p>
+            <h2>AI Usage</h2>
+            <p>
+                ChatGPT was used to brainstorm the interaction ideas and troubleshoot some implementation issues. Suggestions from AI
+                were adapted to suit the Chicago dataset and achieve the interactive features. AI accelerated development but did not
+                replace the manual coding and debugging. We used our lab examples and previous experiences from internships and schools
+                to create this application!
+            </p>
+            <h2>Extra Credit Features</h2>
+            <h3>AI-Assisted Features</h3>
+            <p>
+                These features were supported by ChatGPT where AI brainstormed ideas and suggested the D3 patterns. All the features
+                were implemented by hand and heavily tested with the given Chicago dataset.
+            </p>
+            <p>
+                <b>Legend Hover Preview:</b> When hovering over a crime type in the legend, a temporary preview line is drawn on the chart to allow comparison with
+                the currently selected crime type. This feature goes beyond the required interactions and allows the user to compare
+                multiple crime types efficiently. Additionally, smooth line transitions and annotated peak crime hours were implemented
+                to improve user experience and readability. The preview line was used with an opacity and dashed style to clearly show
+                the difference between the preview line and the main line. This prevents confusion but also provides a clear reference.
+                The user does not need to scroll up and switch the crime type, which enhances interactivity and allows more complex data
+                analysis. AI gave the idea of making the preview lines dashed and was helpful for giving feedback.
+            </p>
+            <p>
+                <b>Peak Hour Annotations:</b> The red “Peak” label marks the hour with the highest number of crimes for each selection. This is automatically
+                identifying the peaks and adds some more analytics beyond the line chart. The peak also being in red makes it stand out,
+                allowing this to be very noticeable. The label is updated whenever the new year and crime is selected, giving notice to
+                the peak! This allows users to identify critical data points and allows easy comparisons if the user wanted to compare
+                the peaks between each crime type and years.
+            </p>
+            <h3>Non-AI Innovation Features</h3>
+            <p>
+                <b>Preview Dots on Hover:</b> The small preview dots that appear on the legend hover line shows the hourly crime counts. This is clear and a brand new
+                implementation, where the preview ability allows the second line to clutter the main chart. This advanced feature allows
+                the user to easily compare the two crimes and is a nice small detail. The dots show the relationship between the crime
+                counts and the hours. This addition supports further analysis that provides users to follow trends with the preview line
+                and the main line.
+            </p>
+            <p>
+                <b>Brushing & Zoom:</b> The user can brush over the chart to highlight the range of hours and dims the point outside of the range. When
+                combining the brushing with the zooming in and out capabilities, navigating the data is extremely easy. These
+                interactive features allow the user to focus on a specific time frame when they are switching between graphs. When the
+                user switches between the graphs, the highlighted portion remains! Along with the smooth transitions when each diagram
+                is created, the user can detect patterns within the different crimes during the peak and low crime hours.
+            </p>
+        </div>
+        
+    </div>
+</body>
+
+</html>

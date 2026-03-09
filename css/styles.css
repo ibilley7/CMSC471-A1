@@ -17,6 +17,20 @@
     line-height: 1.8;
 }
 
+#about-link {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-bottom: 1.25rem;
+    transition: color 0.15s;
+}
+
+#about-link:hover {
+    color: var(--text-primary);
+}
+
 body {
     background-color: var(--bg);
     color: var(--text-primary);
@@ -170,4 +184,91 @@ h1 {
     line-height: 1.7 !important;
     pointer-events: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.about-content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem 2.5rem;
+    box-shadow: var(--shadow);
+    margin-top: 1.5rem;
+}
+
+.about-content h2 {
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+    margin: 1.75rem 0 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.about-content h2:first-child {
+    margin-top: 0;
+}
+
+.about-content p {
+    font-size: 0.875rem;
+    line-height: 1.75;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+}
+
+.about-content ul {
+    margin: 0.5rem 0 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    line-height: 1.75;
+    color: var(--text-secondary);
+}
+
+.about-content ul li {
+    margin-bottom: 0.25rem;
+}
+
+.meta-row {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.meta-value {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+#about-link {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-family: 'DM Mono', monospace;
+    transition: color 0.15s;
+}
+
+.back-link:hover {
+    color: var(--text-primary);
 }
